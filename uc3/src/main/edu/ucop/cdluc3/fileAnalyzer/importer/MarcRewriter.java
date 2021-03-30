@@ -53,6 +53,7 @@ public class MarcRewriter extends DefaultImporter
 	
 	private static enum SerializerStatsItem implements StatsItemEnum
 	{
+		Key(StatsItem.makeStringStatsItem("Key", 120)),
 		Id(StatsItem.makeStringStatsItem("Id", 120)),
 		Title(StatsItem.makeStringStatsItem("Title", 300))
 		;
@@ -103,6 +104,24 @@ public class MarcRewriter extends DefaultImporter
 		}
 	}
 	
+	public void WriteMarc (String filenamebasetrim, String bibid, Record rec, Stats stat_ser)
+	{	
+		String filename = filenamebasetrim + "." + bibid + ".out.mrc";
+		//stat_ser.setVal(SerializerStatsItem.File_Created, "File Created: " + filename);
+		
+		try
+		{
+			File file = new File(filename);
+			if (!file.exists()) {file.createNewFile();}
+			MarcStreamWriter bw = new MarcStreamWriter(new FileOutputStream(file));
+			bw.write(rec);
+			bw.close();
+		} 
+		catch (IOException e)
+		{
+			e.printStackTrace();
+		}
+	}
 		
 	// file import rules
 	public ActionResult importFile(File selectedFile) throws IOException
@@ -131,7 +150,7 @@ public class MarcRewriter extends DefaultImporter
 					bib_id = df.getSubfield('a').getData();
 				}
 			}
-			String key = bib_id;
+			String key = String.format("%03d.%s", rec, bib_id);
 			Stats stat = Generator.INSTANCE.create(key);
 			types.put(stat.key, stat);
 			stat.setVal(SerializerStatsItem.Id, bib_id);
@@ -143,7 +162,8 @@ public class MarcRewriter extends DefaultImporter
 				}
 			}
 							
-			WriteMarcText(filename_base_trim, String.format("%d.%s", rec, bib_id), record, stat);
+			WriteMarcText(filename_base_trim, key, record, stat);
+			WriteMarc(filename_base_trim, key, record, stat);
 			msw.write(record);
 		
 		}  // end of while loop
