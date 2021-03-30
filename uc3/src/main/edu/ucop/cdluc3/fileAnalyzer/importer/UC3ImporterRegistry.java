@@ -28,6 +28,7 @@ public class UC3ImporterRegistry extends ImporterRegistry {
         add(new MarcItemInventory(dt));
 		add(new MarcSerializer(dt));
 		add(new ZipAnalyzer(dt));
+		add(new MarcRewriter(dt));
 	}	
 
 }
