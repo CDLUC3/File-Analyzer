@@ -10,7 +10,7 @@ ADD . /app/
 # Mvn clean will delete all temporary .class files from the build directory.  This makes the final image smaller.
 RUN mkdir appdir && \
     mvn install && \
-    cp demo/target/*.jar appdir && \
+    cp uc3/target/*.jar appdir && \
     mvn clean
 
 # This is a multi stage docker build.  Maven is not needed once the build is complete.
@@ -42,4 +42,4 @@ RUN apt-get install -y libxext6 libxrender-dev libxtst6
 # The maven build bundles all dependency names into the manifest of the generated jar file.
 # Run "ls /tmp" to see the set of runtime jars that are included.
 
-CMD [ "java", "-jar", "DemoFileAnalyzer-2.0.jar" ] 
+CMD [ "java", "-jar", "UC3FileAnalyzer-2.0.jar" ] 
