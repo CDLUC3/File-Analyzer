@@ -1,6 +1,7 @@
 #ignore compiled source
 *.class
 .project
+.DS_Store
 .settings/*
 .idea/*
 bin/*
