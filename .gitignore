@@ -1,6 +1,7 @@
 #ignore compiled source
 *.class
 .project
+.DS_Store
 .settings/*
 .idea/*
 bin/*
@@ -11,6 +12,7 @@ core-utils/target/*
 bag-utils/target/*
 dspace/target/*
 demo/target/*
+uc3/target/*
 gulibrary/target/*
 image/target/*
 image/lib/*

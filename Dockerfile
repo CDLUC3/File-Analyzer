@@ -25,16 +25,12 @@ COPY --from=build /app/appdir/*.jar /app/
 ENV DISPLAY=host.docker.internal:0
 
 # The following extras seem to be needed to run as an X11 app
-RUN apt-get update -y \
-   && apt-get install -y curl \
-   && apt-get install -y gnupg \
-   && apt-get install -y libxext6 \
-   && apt-get install -y libxrender-dev libxtst6 libfreetype6  \
-   && apt-get install -y bash
+RUN apt-get update -y
+RUN apt-get install -y libxext6 libxrender-dev libxtst6
 
-RUN mkdir /data \
-    && cd /data \
-    && git clone https://github.com/terrywbrady/File-Analyzer-Test-Data
+# RUN mkdir /data \
+#     && cd /data \
+#     && git clone https://github.com/terrywbrady/File-Analyzer-Test-Data
 
 # Prerequisites
 #  - in XQuartz, enable network connections (restart)
