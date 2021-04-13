@@ -1,8 +1,6 @@
 package edu.ucop.cdluc3.fileAnalyzer.importer;
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.TreeMap;
 import java.util.Vector;

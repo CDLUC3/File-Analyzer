@@ -20,6 +20,7 @@ public class UC3ActionRegistry extends ActionRegistry {
                 add(new ZipInventory(dt));
                 add(new MarcItemInventory(dt));
                 add(new MarcAsciiCheck(dt));
+                add(new KeyExtractorMerge(dt));
         }
 
 }
