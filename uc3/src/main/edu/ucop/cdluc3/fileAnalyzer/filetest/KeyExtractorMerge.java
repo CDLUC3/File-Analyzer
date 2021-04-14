@@ -3,6 +3,7 @@ package edu.ucop.cdluc3.fileAnalyzer.filetest;
 import gov.nara.nwts.ftapp.FTDriver;
 import gov.nara.nwts.ftapp.filetest.DefaultFileTest;
 import gov.nara.nwts.ftapp.filter.KeyextFilter;
+import gov.nara.nwts.ftapp.ftprop.FTPropString;
 import gov.nara.nwts.ftapp.ftprop.InitializationStatus;
 import gov.nara.nwts.ftapp.importer.DelimitedFileReader;
 import gov.nara.nwts.ftapp.stats.Stats;
@@ -15,6 +16,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.TreeMap;
 import java.util.Vector;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 public class KeyExtractorMerge extends DefaultFileTest {
@@ -41,6 +44,7 @@ public class KeyExtractorMerge extends DefaultFileTest {
     {
         Key(StatsItem.makeStringStatsItem("Key", 200)),
         Count(StatsItem.makeIntStatsItem("Count").makeFilter(true)),
+        GROUP(StatsItem.makeStringStatsItem("Group",100).setInitVal("").makeFilter(true)),
         AUX1(StatsItem.makeStringStatsItem("Aux1",100).setInitVal("")),
         AUX2(StatsItem.makeStringStatsItem("Aux2",100).setInitVal("")),
         AUX3(StatsItem.makeStringStatsItem("Aux3",100).setInitVal("")),
@@ -91,9 +95,16 @@ public class KeyExtractorMerge extends DefaultFileTest {
     
     public static StatsItemConfig details = StatsItemConfig.create(KeyMergeStatsItems.class);
     
+	public static final String REGEX = "Regex";
+	public static final String GROUP = "Group";
+
     public KeyExtractorMerge(FTDriver dt)
     {
         super(dt);
+		this.ftprops.add(new FTPropString(dt, this.getClass().getSimpleName(),  REGEX, REGEX,
+				"Group Key Regex", ".*(\\.[^\\.]{1,8})$"));
+		this.ftprops.add(new FTPropString(dt, this.getClass().getSimpleName(),  GROUP, GROUP,
+				"Match Group", "1"));
     }
 
     @Override public InitializationStatus init() {
@@ -109,11 +120,28 @@ public class KeyExtractorMerge extends DefaultFileTest {
 
     @Override
     public Object fileTest(File f) {
+		String regex = getProperty(REGEX).toString();
+		Pattern pgroup = regex.isEmpty() ? null : Pattern.compile(regex);
+		int group  = -1;
+		try {
+			group = Integer.parseInt(getProperty(GROUP).toString());
+		} catch(Exception e) {
+		}
+		
+		
     	try {
 			Vector<Vector<String>> data = DelimitedFileReader.parseFile(f, ",");
 			for(Vector<String>row: data) {
 				String key = row.get(0);
 				Stats stats = getStats(key);		
+				if (pgroup != null) {
+					Matcher m = pgroup.matcher(key);
+					if (m.matches()) {
+						if (group >=0 && group <= m.groupCount()) {
+							stats.setVal(KeyMergeStatsItems.GROUP, m.group(group));
+						}
+					}
+				}
 				String label = row.get(1).intern();
 				String aux = row.get(2);
 				StatsItemEnum si = getLabelSI(label);
