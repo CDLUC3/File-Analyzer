@@ -141,9 +141,9 @@ public class MarcETDLookup extends DefaultFileTest implements Importer
             if (ftni == 2) {
                 rstat = Status.PASS;
                 String url = "https://escholarship.cdlib.org/pretend/url";
-                DataField df = factory.newDataField("856", '0', ' ');
+                DataField df = factory.newDataField("856", ' ', ' ');
                 record.addVariableField(df);
-                df.addSubfield(factory.newSubfield('u', url));
+                df.addSubfield(factory.newSubfield('a', url));
                 stat.setVal(ETDStatsItem.ESchoLink, url);            
             }
             stat.setVal(ETDStatsItem.Status, rstat);            
