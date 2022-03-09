@@ -72,7 +72,7 @@ public class MarcSerializer extends DefaultImporter
 	
 	private static enum SerializerStatsItem implements StatsItemEnum
 	{
-		Bib_ID(StatsItem.makeStringStatsItem("Bib IDs", 100)),
+		Bib_ID(StatsItem.makeStringStatsItem("Bib ID or ISBN", 150)),
 		Title(StatsItem.makeStringStatsItem("Title", 300)),
 		Serialized(StatsItem.makeEnumStatsItem(SERIALIZED.class, "Serialized?").setWidth(100)),
 		File_Created(StatsItem.makeStringStatsItem("File Created", 600));
@@ -138,6 +138,8 @@ public class MarcSerializer extends DefaultImporter
 		
 		InputStream in = new FileInputStream(selectedFile);
 		MarcReader reader = new MarcPermissiveStreamReader(in, true, true);
+
+		int rec = 0;
 			
 		if (bib_id_vec_from_file == null)
 		{
@@ -146,9 +148,16 @@ public class MarcSerializer extends DefaultImporter
 				Record record = reader.next();
 				
 				DataField df907 = (DataField) record.getVariableField("907");
-				String bib_id = df907.getSubfield('a').getData();
+				String bib_id = df907 == null ? "" : df907.getSubfield('a').getData();
 				if (bib_id.startsWith(".b") && bib_id.length()==10) {bib_id=bib_id.substring(2, bib_id.length()-1);}
 					
+				if (bib_id.isEmpty()) {
+					DataField df20 = (DataField) record.getVariableField("020");
+					bib_id = df20 == null ? "" : df20.getSubfield('a').getData();
+				}
+				if (bib_id.isEmpty()) {
+					bib_id = "" + (rec++);
+				}
 				String key = bib_id;
 				Stats stat = Generator.INSTANCE.create(key);
 				types.put(stat.key, stat);
