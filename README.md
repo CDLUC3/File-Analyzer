@@ -1,3 +1,9 @@
+## Running UC3 File Analyzer
+```
+mvn install
+java -jar uc3/target/UC3FileAnalyzer-2.0.jar
+```
+
 ## PURPOSE
 Project Page: http://georgetown-university-libraries.github.io/File-Analyzer/
 
