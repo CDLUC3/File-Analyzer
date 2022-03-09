@@ -22,6 +22,7 @@ public class UC3ImporterRegistry extends ImporterRegistry {
 	public UC3ImporterRegistry(FTDriver dt) {
 		super(dt);
 		removeImporter(CounterValidation.class);
+        add(new MarcETDLookup(dt));
 		add(new MarcRecValidator(dt));
 		add(new EncodingCheck(dt));
 		add(new MarcInventory(dt));
