@@ -18,6 +18,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HashSet;
 import java.util.TreeMap;
 import java.util.Vector;
 import java.util.regex.Matcher;
@@ -86,12 +87,15 @@ public class MarcItemInventory extends DefaultFileTest implements Importer
     public static StatsItemConfig details = StatsItemConfig.create(InventoryStatsItem.class);
     
     public static final String P_VTAGS = "subfields";
+    public static final String P_VTAGS_INDEX = "subfields-index";
         
     public MarcItemInventory(FTDriver dt)
     {
         super(dt);
         this.ftprops.add(new FTPropString(dt, this.getClass().getSimpleName(),  P_VTAGS, P_VTAGS,
                 "Comma Separated list of subfields to extract (example: 907a)", "907a"));            
+        this.ftprops.add(new FTPropString(dt, this.getClass().getSimpleName(),  P_VTAGS_INDEX, P_VTAGS_INDEX,
+                "Comma Separated list of subfields to index (example: 710a)", "710a"));            
     }
 
     int ftni = 0;
@@ -103,10 +107,17 @@ public class MarcItemInventory extends DefaultFileTest implements Importer
         ftni = 0;
         details = StatsItemConfig.create(InventoryStatsItem.class);
         String subfields = (String)this.getProperty(P_VTAGS);
+        String subfieldsIndex = (String)this.getProperty(P_VTAGS_INDEX);
+        HashSet<String> ifields = new HashSet<>();
+        for(String subfield: subfieldsIndex.split(",")) {
+            ifields.add(subfield);
+        }
         for(String subfield: subfields.split(",")) {
             if (!pTag.matcher(subfield).matches()) continue;
             auxTags.add(subfield);
-            details.addStatsItem(subfield, StatsItem.makeStringStatsItem(subfield));
+            StatsItem si = StatsItem.makeStringStatsItem(subfield);
+            si.makeFilter(ifields.contains(subfield));
+            details.addStatsItem(subfield, si);
         }
         return super.init();
     }
@@ -202,6 +213,7 @@ public class MarcItemInventory extends DefaultFileTest implements Importer
 
     @Override
     public void refineResults() {
+		getStatsDetails().createFilters(this.dt.types);
         this.dt.types.remove(DEFKEY);
     }
     @Override

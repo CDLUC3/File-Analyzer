@@ -6,6 +6,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "Launch UC3FileAnalyzer",
+            "request": "launch",
+            "mainClass": "edu.ucop.cdluc3.fileAnalyzer.UC3FileAnalyzer",
+            "projectName": "UC3FileAnalyzer"
+        },
+        {
+            "type": "java",
             "name": "Debug (Launch) - Current File",
             "request": "launch",
             "mainClass": "${file}"
